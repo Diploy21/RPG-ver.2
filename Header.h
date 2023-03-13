@@ -1,46 +1,57 @@
 #pragma once
 
-#include <string>
 using namespace std;
 
+#define x 50
+#define y 25
 
 class Player
 {
 public:
 
-	Player(char Map[][50], int Y);
+	Player(char Map[y][x]);
 	~Player();
-	bool PlayerMove(bool state, Player& P, char Map[][50], int Y);
+	bool PlayerMove(bool state, char Map[y][x]);
 	int Health, Arnmor, Gold;
 
 private:
 	const char Sign = 2;
-	int Player_Pos_x;
-	int Player_Pos_y;
+	int Player_Position_X;
+	int Player_Position_Y;
 	int Damage;
 };
 
 class Enemy
 {
 public:
-	Enemy(char Map[][50], int Y);
+	Enemy(char Map[y][x]);
 	~Enemy();
 	
-	void EnemyAI_Move(char Map[][50], int Y);
+	void EnemyAI_Move(char Map[y][x]);
 
 private:
-	void MoveState(int direc, int& dist);
-	bool DirectionCheck(int direc, int dist, char Map[][50], int Y);
+	void CopingMap(int copyMapInt[y][x], char Map[y][x]);
+	void ClearCopingMap(int copyMapInt[y][x]);
+
+	void EnemyMove(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, int copyMapInt[y][x], char Map[y][x]);
+
+	void BuildingShortestPath(int Enemy_Position_Y, int Enemy_Position_X, int& counter, int copyMapInt[y][x]);
+
+	bool PathFinderCheck(int Map[y][x], int Enemy_End_Move_Y, int Enemy_End_Move_X, int d);
+
+	bool CheckPlayerPosition(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, char Map[y][x]);
 
 	const char Sign = 1;
-	int Enemy_Pos_x;
-	int Enemy_Pos_y;
+	int Enemy_Position_X;
+	int Enemy_Position_Y;
 	int Health, Arnmor, Damage, Gold;
-	int MoveDistantion = -1;
-	int MoveDirection = -1;
-	bool flag = false;
+	int Enemy_End_Move_X, Enemy_End_Move_Y;
+	int counter;
+	int copyMapInt[y][x];
+
 };
 
-void RenderMap(char Map[][50], int Y);
-void output(char Map[][50], int Y, int H = 0, int A = 0, int G = 0);
+void RenderMap(char Map[y][x]);
+void output(char Map[y][x], int H = 0, int A = 0, int G = 0);
+void Sleep();
 
