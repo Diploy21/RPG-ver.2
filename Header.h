@@ -29,6 +29,7 @@ public:
 	~Enemy();
 	
 	void EnemyAI_Move(char Map[y][x], Player& P);
+	int Health, Arnmor, Damage;
 
 private:
 	void CopingMap(int copyMapInt[y][x], char Map[y][x]);
@@ -46,7 +47,6 @@ private:
 	const char Sign = 1;
 	int Enemy_Position_X;
 	int Enemy_Position_Y;
-	int Health, Arnmor, Damage, Gold;
 	int Enemy_End_Move_X, Enemy_End_Move_Y;
 	int counter;
 	int copyMapInt[y][x];
@@ -55,5 +55,5 @@ private:
 
 void RenderMap(char Map[y][x]);
 void output(char Map[y][x], int H = 0, int A = 0, int G = 0);
-void Sleep();
-
+void Sleep1(unsigned a);
+bool Menu(bool state);

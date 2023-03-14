@@ -17,6 +17,29 @@ void Sleep1(unsigned a)
 	this_thread::sleep_for(chrono::seconds(a));
 }
 
+//Menu
+bool Menu(bool state)
+{
+	cout << "\t\t\t\t My Game\n";
+	cout << "\t\t1 - Start game.\n";
+	cout << "\t\t2 - Out.\n";
+	int a;
+	cin >> a;
+
+	switch(a)
+	{
+	case 1:
+		state = true;
+		break;
+	case 2:
+		state = false;
+		break;
+	default:
+		break;
+	}
+	return state;
+}
+
 //  Map block
 void RenderMap(char Map[y][x])
 {
@@ -441,8 +464,6 @@ bool Player::PlayerMove(bool state, char Map[y][x])
 			Map[Player_Position_Y][Player_Position_X] = ' ';
 			Player_Position_Y++;
 			Map[Player_Position_Y][Player_Position_X] = Sign;
-			system("cls");
-			output(Map, Health, Arnmor, Gold);
 		}
 		break;
 	case 'd':
@@ -462,8 +483,18 @@ bool Player::PlayerMove(bool state, char Map[y][x])
 		}
 		break;
 	case 'o':
-		state = false;
-		break;
+		cout << "Quit the game?(y/n)\n";
+		char a;
+		cin >> a;
+		if (a == 'y')
+		{
+			state = false;
+			break;
+		}
+		else
+		{
+			break;
+		}
 	default:
 		break;
 	}
@@ -488,9 +519,32 @@ Player::Player(char Map[y][x])
 		Player_Position_X = rand() % 49 + 1;
 		Player_Position_Y = rand() % 24 + 1;
 	}
-	Health = 100;
-	Arnmor = 1;
-	Gold = 10;
+	cout << "Select character: \n";
+	cout << "1 - Mage\n";
+	cout << "2 - Warrior\n";
+	cout << "3 - Archer\n";
+	int a;
+	cin >> a;
+	switch (a)
+	{
+	case 1:
+		Health = 100;
+		Arnmor = 1;
+		Gold = 25;
+		break;
+	case 2:
+		Health = 100;
+		Arnmor = 5;
+		Gold = 10;
+		break;
+	case 3:
+		Health = 130;
+		Arnmor = 1;
+		Gold = 10;
+		break;
+	default:
+		break;
+	}
 }
 
 Player::Player()

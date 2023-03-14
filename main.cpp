@@ -10,26 +10,27 @@ void main()
 {
 	char Map[y][x]{ '\0' };
 
-	RenderMap(Map);
-
-	Player P(Map);
-
-	Enemy E(Map);
-
-
-	output(Map, P.Health, P.Arnmor, P.Gold);
 	bool state = true;
 
-	while (P.PlayerMove(state, Map))
+	if (Menu(state))
 	{
-		do {
-			output(Map, P.Health, P.Arnmor, P.Gold);
-			E.EnemyAI_Move(Map, P);
-			Sleep(400);
-			system("cls");
-		} while (!_kbhit());
-		
+		RenderMap(Map);
 
+		Player P(Map);
+
+		Enemy E(Map);
+		Enemy R(Map);
+
+		while (P.PlayerMove(state, Map))
+		{
+			do {
+				output(Map, P.Health, P.Arnmor, P.Gold);
+				E.EnemyAI_Move(Map, P);
+				R.EnemyAI_Move(Map, P);
+				Sleep(400);
+				system("cls");
+			} while (!_kbhit());
+		}
 	}
 	
 	/*char a = 0;
