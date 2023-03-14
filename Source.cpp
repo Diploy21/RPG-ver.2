@@ -12,28 +12,9 @@ using namespace std;
 
 
 // ожидание
-void Sleep()
+void Sleep1(unsigned a)
 {
-	this_thread::sleep_for(chrono::nanoseconds(2000000000));
-}
-
-// читска консоли
-void clear() 
-{
-	COORD topLeft = { 0, 0 };
-	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO screen;
-	DWORD written;
-
-	GetConsoleScreenBufferInfo(console, &screen);
-	FillConsoleOutputCharacterA(
-		console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written
-	);
-	FillConsoleOutputAttribute(
-		console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
-		screen.dwSize.X * screen.dwSize.Y, topLeft, &written
-	);
-	SetConsoleCursorPosition(console, topLeft);
+	this_thread::sleep_for(chrono::seconds(a));
 }
 
 //  Map block
@@ -150,7 +131,6 @@ Enemy::Enemy(char Map[y][x])
 
 	Health = 100;
 	Arnmor = 1;
-	Gold = 10;
 }
 
 
@@ -159,8 +139,10 @@ void Enemy::EnemyAI_Move(char Map[y][x], Player& P)
 {
 	/*cout << "Enemy_Position_Y - " << Enemy_Position_Y << "|Enemy_Position_X - " << Enemy_Position_X << endl;
 	cout << "|Enemy_End_Move_Y - " << Enemy_End_Move_Y << "|Enemy_End_Move_X - " << Enemy_End_Move_X << endl;
-	cout << "EndEnemy POS - " << copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] << "|" <<  copyMapInt[Enemy_Position_Y][Enemy_Position_X] << " - Enemy POS | counter - " << counter << endl;
-	*/
+	cout << "EndEnemy POS - " << copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] << "|" 
+		<<  copyMapInt[Enemy_Position_Y][Enemy_Position_X] << " - Enemy POS | counter - " << counter << endl;
+	cout << "Player_Position_Y - " << P.Player_Position_Y << "|Player_Position_X - " << P.Player_Position_X << endl;*/
+
 	UpdateCopingMap(copyMapInt, Map, P);
 
 	if (Enemy_Position_Y == Enemy_End_Move_Y && Enemy_Position_X == Enemy_End_Move_X)
@@ -184,7 +166,16 @@ void Enemy::EnemyAI_Move(char Map[y][x], Player& P)
 		BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
 	}
 	
+	if (CheckPlayerPosition(Enemy_Position_Y, Enemy_Position_X, Map)) //Блок отвечает за поиск в радиусе игрока, сли нашел движется к нему.
+	{
+		CopingMap(copyMapInt, Map);
+		counter = 1;
+		copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] = 1;
+		BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
+	}
+	
 	EnemyMove(Enemy_Position_Y, Enemy_Position_X, copyMapInt, Map);
+
 
 	/*for (int i = 0; i < y; i++)
 	{
@@ -198,16 +189,6 @@ void Enemy::EnemyAI_Move(char Map[y][x], Player& P)
 		cout << endl;
 	}*/
 
-	/*if (CheckPlayerPosition(Enemy_Position_Y, Enemy_Position_X, Map))
-	{
-		BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
-		EnemyMove(Enemy_End_Move_Y, Enemy_End_Move_X, copyMapInt, Map);
-	}
-	else 
-	{
-		BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
-		EnemyMove(Enemy_End_Move_Y, Enemy_End_Move_X, copyMapInt, Map);
-	}*/
 }
 
 //Волновой алгоритм построения пути до цели
@@ -243,76 +224,6 @@ void Enemy::BuildingShortestPath(int Enemy_Position_Y, int Enemy_Position_X, int
 		counter++;
 	}
 	counter--;
-}
-
-//Копирование карты в целочисленный массив
-void Enemy::CopingMap(int copyMapInt[y][x], char Map[y][x])
-{
-	for (int i = 0; i < y; i++) // <= 17
-	{
-		for (int j = 0; j < x; j++) // <= 36
-		{
-			if (Map[i][j] == 1)
-			{
-				copyMapInt[i][j] = 0;
-			}
-			else if (Map[i][j] == 2)
-			{
-				copyMapInt[i][j] = -2;
-			}
-			else if (Map[i][j] != ' ')
-			{
-				copyMapInt[i][j] = -1;
-			}
-			else
-			{
-				copyMapInt[i][j] = 0;
-			}
-		}
-	}
-}
-
-void Enemy::UpdateCopingMap(int copyMapInt[y][x], char Map[y][x], const Player& P)
-{
-	int TempMap[y][x];
-	CopingMap(TempMap, Map);
-	int CoordinateTemp[12][3];
-	int count = 0;
-
-	for (int i = 0; i < y; i++)
-	{
-		for (int j = 0; j < x; j++)
-		{
-			if (copyMapInt[i][j] == -2)
-			{
-				copyMapInt[i][j] = 0;
-			}
-		}
-	}
-	for (int i = 0; i < y; i++)
-	{
-		for (int j = 0; j < x; j++) 
-		{
-			if (TempMap[i][j] == -2)
-			{
-				copyMapInt[P.Player_Position_Y][P.Player_Position_X] = -2;
-			}
-		}
-	}
-	
-	BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
-}
-
-
-void Enemy::ClearCopingMap(int copyMapInt[y][x])
-{
-	for (int i = 0; i < y; i++)
-	{
-		for (int j = 0; j < x; j++)
-		{
-			copyMapInt[i][j] = 0;
-		}
-	}
 }
 
 //Функция проверяет нашел ли алгоритм коненую точку массива или заполнил весь массив(Реверсивно применяется для движения)
@@ -421,7 +332,7 @@ bool Enemy::CheckPlayerPosition(int& Enemy_Position_Y, int& Enemy_Position_X, ch
 				{
 					Enemy_End_Move_X = j - 1;
 				}
-				else if (j > Enemy_Position_X)
+				else if (j < Enemy_Position_X)
 				{
 					Enemy_End_Move_X = j + 1;
 				}
@@ -438,6 +349,68 @@ bool Enemy::CheckPlayerPosition(int& Enemy_Position_Y, int& Enemy_Position_X, ch
 	}
 
 	return state;
+}
+
+
+
+
+//Копирование карты в целочисленный массив
+void Enemy::CopingMap(int copyMapInt[y][x], char Map[y][x])
+{
+	for (int i = 0; i < y; i++) // <= 17
+	{
+		for (int j = 0; j < x; j++) // <= 36
+		{
+			if (Map[i][j] == 1)
+			{
+				copyMapInt[i][j] = 0;
+			}
+			else if (Map[i][j] == 2)
+			{
+				copyMapInt[i][j] = -2;
+			}
+			else if (Map[i][j] != ' ')
+			{
+				copyMapInt[i][j] = -1;
+			}
+			else
+			{
+				copyMapInt[i][j] = 0;
+			}
+		}
+	}
+}
+
+//Обновление карты
+void Enemy::UpdateCopingMap(int copyMapInt[y][x], char Map[y][x], const Player& P)
+{
+	int TempMap[y][x];
+	CopingMap(TempMap, Map);
+	int CoordinateTemp[12][3];
+	int count = 0;
+
+	for (int i = 0; i < y; i++)
+	{
+		for (int j = 0; j < x; j++)
+		{
+			if (copyMapInt[i][j] == -2)
+			{
+				copyMapInt[i][j] = 0;
+			}
+		}
+	}
+	for (int i = 0; i < y; i++)
+	{
+		for (int j = 0; j < x; j++)
+		{
+			if (TempMap[i][j] == -2)
+			{
+				copyMapInt[P.Player_Position_Y][P.Player_Position_X] = -2;
+			}
+		}
+	}
+
+	BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
 }
 
 
