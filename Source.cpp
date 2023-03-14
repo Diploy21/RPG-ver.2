@@ -143,7 +143,10 @@ Enemy::Enemy(char Map[y][x])
 	}
 
 	counter = 1;
-	copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] = counter;
+	CopingMap(copyMapInt, Map);
+	copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] = 1;
+
+	BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
 
 	Health = 100;
 	Arnmor = 1;
@@ -152,17 +155,50 @@ Enemy::Enemy(char Map[y][x])
 
 
 //реализация движения
-void Enemy::EnemyAI_Move(char Map[y][x])
+void Enemy::EnemyAI_Move(char Map[y][x], Player& P)
 {
-	CopingMap(copyMapInt, Map);
+	/*cout << "Enemy_Position_Y - " << Enemy_Position_Y << "|Enemy_Position_X - " << Enemy_Position_X << endl;
+	cout << "|Enemy_End_Move_Y - " << Enemy_End_Move_Y << "|Enemy_End_Move_X - " << Enemy_End_Move_X << endl;
+	cout << "EndEnemy POS - " << copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] << "|" <<  copyMapInt[Enemy_Position_Y][Enemy_Position_X] << " - Enemy POS | counter - " << counter << endl;
+	*/
+	UpdateCopingMap(copyMapInt, Map, P);
 
 	if (Enemy_Position_Y == Enemy_End_Move_Y && Enemy_Position_X == Enemy_End_Move_X)
 	{
-		Enemy_End_Move_X = rand() % x + 1;
-		Enemy_End_Move_Y = rand() % y + 1;
-		copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] = counter;
+		CopingMap(copyMapInt, Map);
+
+		bool flagMove = false;
+		while (!flagMove)
+		{
+			if (Map[Enemy_End_Move_Y][Enemy_End_Move_X] == ' ')
+			{
+				flagMove = true;
+				break;
+			}
+			Enemy_End_Move_X = rand() % x + 1;
+			Enemy_End_Move_Y = rand() % y + 1;
+
+		}
+		counter = 1;
+		copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] = 1;
+		BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
 	}
-	if (CheckPlayerPosition(Enemy_End_Move_Y, Enemy_End_Move_X, Map))
+	
+	EnemyMove(Enemy_Position_Y, Enemy_Position_X, copyMapInt, Map);
+
+	/*for (int i = 0; i < y; i++)
+	{
+		for (int j = 0; j < x; j++)
+		{
+			if (copyMapInt[i][j] > 1)
+				cout << "*";
+			else
+				cout << copyMapInt[i][j];
+		}
+		cout << endl;
+	}*/
+
+	/*if (CheckPlayerPosition(Enemy_Position_Y, Enemy_Position_X, Map))
 	{
 		BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
 		EnemyMove(Enemy_End_Move_Y, Enemy_End_Move_X, copyMapInt, Map);
@@ -171,15 +207,13 @@ void Enemy::EnemyAI_Move(char Map[y][x])
 	{
 		BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
 		EnemyMove(Enemy_End_Move_Y, Enemy_End_Move_X, copyMapInt, Map);
-	}
-
-	ClearCopingMap(copyMapInt);
+	}*/
 }
 
 //Волновой алгоритм построения пути до цели
 void Enemy::BuildingShortestPath(int Enemy_Position_Y, int Enemy_Position_X, int& counter, int copyMapInt[y][x])
 {
-	while (PathFinderCheck(copyMapInt, Enemy_Position_X, Enemy_Position_Y, counter))
+	while (PathFinderCheck(copyMapInt, Enemy_Position_Y, Enemy_Position_X, counter))
 	{
 		for (int i = 1; i < y - 1; i++)
 		{
@@ -208,6 +242,7 @@ void Enemy::BuildingShortestPath(int Enemy_Position_Y, int Enemy_Position_X, int
 		}
 		counter++;
 	}
+	counter--;
 }
 
 //Копирование карты в целочисленный массив
@@ -217,13 +252,17 @@ void Enemy::CopingMap(int copyMapInt[y][x], char Map[y][x])
 	{
 		for (int j = 0; j < x; j++) // <= 36
 		{
-			if (Map[i][j] != ' ')
+			if (Map[i][j] == 1)
 			{
-				copyMapInt[i][j] = -1;
+				copyMapInt[i][j] = 0;
 			}
 			else if (Map[i][j] == 2)
 			{
-				copyMapInt[i][j] = 0;
+				copyMapInt[i][j] = -2;
+			}
+			else if (Map[i][j] != ' ')
+			{
+				copyMapInt[i][j] = -1;
 			}
 			else
 			{
@@ -232,6 +271,38 @@ void Enemy::CopingMap(int copyMapInt[y][x], char Map[y][x])
 		}
 	}
 }
+
+void Enemy::UpdateCopingMap(int copyMapInt[y][x], char Map[y][x], const Player& P)
+{
+	int TempMap[y][x];
+	CopingMap(TempMap, Map);
+	int CoordinateTemp[12][3];
+	int count = 0;
+
+	for (int i = 0; i < y; i++)
+	{
+		for (int j = 0; j < x; j++)
+		{
+			if (copyMapInt[i][j] == -2)
+			{
+				copyMapInt[i][j] = 0;
+			}
+		}
+	}
+	for (int i = 0; i < y; i++)
+	{
+		for (int j = 0; j < x; j++) 
+		{
+			if (TempMap[i][j] == -2)
+			{
+				copyMapInt[P.Player_Position_Y][P.Player_Position_X] = -2;
+			}
+		}
+	}
+	
+	BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
+}
+
 
 void Enemy::ClearCopingMap(int copyMapInt[y][x])
 {
@@ -245,7 +316,7 @@ void Enemy::ClearCopingMap(int copyMapInt[y][x])
 }
 
 //Функция проверяет нашел ли алгоритм коненую точку массива или заполнил весь массив(Реверсивно применяется для движения)
-bool Enemy::PathFinderCheck(int copyMapInt[y][x], int Enemy_End_Move_Y, int Enemy_End_Move_X, int counter)
+bool Enemy::PathFinderCheck(int copyMapInt[y][x], int Enemy_Move_Y, int Enemy_Move_X, int counter)
 {
 	bool state = false;
 
@@ -256,10 +327,11 @@ bool Enemy::PathFinderCheck(int copyMapInt[y][x], int Enemy_End_Move_Y, int Enem
 			if (copyMapInt[i][j] == 0)
 			{
 				state = true;
+				break;
 			}
 		}
 	}
-	if (copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] == counter)
+	if (copyMapInt[Enemy_Move_Y][Enemy_Move_X] == counter)
 	{
 		state = false;
 	}
@@ -267,9 +339,9 @@ bool Enemy::PathFinderCheck(int copyMapInt[y][x], int Enemy_End_Move_Y, int Enem
 }
 
 //Функция движения по найденному маршруту
-void Enemy::EnemyMove(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, int copyMapInt[y][x], char Map[y][x])
+void Enemy::EnemyMove(int& Enemy_Position_Y, int& Enemy_Position_X, int copyMapInt[y][x], char Map[y][x])
 {
-	if (PathFinderCheck(copyMapInt, Enemy_End_Move_Y, Enemy_End_Move_X, counter))
+	if (PathFinderCheck(copyMapInt, Enemy_Position_Y, Enemy_Position_X, counter) && counter)
 	{
 		if (copyMapInt[Enemy_Position_Y - 1][Enemy_Position_X] == counter)
 		{
@@ -279,7 +351,7 @@ void Enemy::EnemyMove(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, int copyMapI
 			Map[Enemy_Position_Y][Enemy_Position_X] = Sign;
 			counter--;
 		}
-		if (copyMapInt[Enemy_Position_Y + 1][Enemy_Position_X] == counter)
+		else if (copyMapInt[Enemy_Position_Y + 1][Enemy_Position_X] == counter)
 		{
 			copyMapInt[Enemy_Position_Y][Enemy_Position_X] = 0;
 			Map[Enemy_Position_Y][Enemy_Position_X] = ' ';
@@ -287,7 +359,7 @@ void Enemy::EnemyMove(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, int copyMapI
 			Map[Enemy_Position_Y][Enemy_Position_X] = Sign;
 			counter--;
 		}
-		if (copyMapInt[Enemy_Position_Y][Enemy_Position_X - 1] == counter)
+		else if (copyMapInt[Enemy_Position_Y][Enemy_Position_X - 1] == counter)
 		{
 			copyMapInt[Enemy_Position_Y][Enemy_Position_X] = 0;
 			Map[Enemy_Position_Y][Enemy_Position_X] = ' ';
@@ -295,7 +367,7 @@ void Enemy::EnemyMove(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, int copyMapI
 			Map[Enemy_Position_Y][Enemy_Position_X] = Sign;
 			counter--;
 		}
-		if (copyMapInt[Enemy_Position_Y][Enemy_Position_X + 1] == counter)
+		else if (copyMapInt[Enemy_Position_Y][Enemy_Position_X + 1] == counter)
 		{
 			copyMapInt[Enemy_Position_Y][Enemy_Position_X] = 0;
 			Map[Enemy_Position_Y][Enemy_Position_X] = ' ';
@@ -303,11 +375,27 @@ void Enemy::EnemyMove(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, int copyMapI
 			Map[Enemy_Position_Y][Enemy_Position_X] = Sign;
 			counter--;
 		}
+		else
+		{
+			CopingMap(copyMapInt, Map);
+			counter = 1;
+			copyMapInt[Enemy_End_Move_Y][Enemy_End_Move_X] = 1;
+			BuildingShortestPath(Enemy_Position_Y, Enemy_Position_X, counter, copyMapInt);
+		}
+
+		/*for (int i = 0; i < y; i++)
+		{
+			for (int j = 0; j < x; j++)
+			{
+				cout << copyMapInt[i][j];
+			}
+			cout << endl;
+		}*/
 	}
 }
 
 //функция проверяте есть ли игрок в области видимости, возвраащет его координаты и истину если есть
-bool Enemy::CheckPlayerPosition(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, char Map[y][x])
+bool Enemy::CheckPlayerPosition(int& Enemy_Position_Y, int& Enemy_Position_X, char Map[y][x])
 {
 	bool state = false;
 	for (int i = Enemy_Position_Y - 4; i < Enemy_Position_Y + 4; i++)
@@ -348,6 +436,7 @@ bool Enemy::CheckPlayerPosition(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, ch
 			
 		}
 	}
+
 	return state;
 }
 
@@ -429,6 +518,11 @@ Player::Player(char Map[y][x])
 	Health = 100;
 	Arnmor = 1;
 	Gold = 10;
+}
+
+Player::Player()
+{
+	
 }
 
 Player::~Player()
