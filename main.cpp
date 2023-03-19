@@ -1,44 +1,40 @@
-#include <iostream>
-#include <conio.h>
-#include <Windows.h>
-#include "Header.h"
-using namespace std;
+#include "Source.h"
+#include "Player.h"
+#include "Enemy.h"
 
 
 void main()
 {
-	const int X = 50;
-	const int Y = 25;
-	char Map[Y][X]{ '\0' };
+	char Map[y][x]{ ' ' };
 
-	RenderMap(Map, Y);
-
-	Player P(Map, Y);
-
-	Enemy E(Map, Y);
-
-
-	output(Map, Y, P.Health, P.Arnmor, P.Gold);
 	bool state = true;
 
-	while (true)//P.PlayerMove(state, P, Map, Y))
+	if (Menu(state))
 	{
-		//do {
-			output(Map, Y, P.Health, P.Arnmor, P.Gold);
-			Sleep(240);
-			E.EnemyAI_Move(Map, Y);
-			
-			system("cls");
-		//} while (!_kbhit());
-		
+		RenderMap(Map);
 
+		Player P(Map);
+
+		Enemy E(Map);
+		Enemy R(Map);
+
+		while (P.PlayerMove(state, Map) && P.Health != 0)
+		{
+			do {
+				output(Map, P.Health, P.Arnmor, P.Gold);
+				E.EnemyAI_Move(Map, P);
+				R.EnemyAI_Move(Map, P);
+				Sleep(400);
+				system("cls");
+			} while (!_kbhit());
+		}
 	}
 	
-	char a = 0;
+	/*char a = 0;
 
 	for (int i = 0; i < 256; i++)
 	{
 		cout << a << " - symbol #" << i << endl;
 		a++;
-	}
+	}*/
 }
