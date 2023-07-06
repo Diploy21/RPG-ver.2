@@ -6,7 +6,12 @@
 #include <ctime>
 #include <thread>
 #include <chrono>
+#include <vector>
+#include <functional>
+#include <fstream>
 
+class Player;
+class Enemy;
 
 using namespace std;
 
@@ -14,6 +19,5 @@ using namespace std;
 #define y 25
 
 void RenderMap(char Map[y][x]);
-void output(char Map[y][x], int H = 0, int A = 0, int G = 0);
-void Sleep1(unsigned a);
+void output(char Map[y][x], Player& P);
 bool Menu(bool state);

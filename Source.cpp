@@ -1,13 +1,9 @@
-#include "Source.h"
-
+п»ї#include "Source.h"
+#include "Enemy.h"
+#include "Player.h"
 using namespace std;
 
-
-// ожидание
-void Sleep1(unsigned a)
-{
-	this_thread::sleep_for(chrono::seconds(a));
-}
+class Player;
 
 //Menu
 bool Menu(bool state)
@@ -71,7 +67,7 @@ void RenderMap(char Map[y][x])
 	}
 }
 
-void output(char Map[y][x], int H, int A, int G)
+void output(char Map[y][x], Player &P)
 {
 	for (int i = 0; i < y; i++)
 	{
@@ -79,15 +75,25 @@ void output(char Map[y][x], int H, int A, int G)
 		{
 			if (i == 0 && j == x - 1)
 			{
-				cout << Map[i][j] << "\t Health - " << H;
+				cout << Map[i][j] << "\t Health - " << P.Health;
 			}
 			else if (i == 1 && j == x - 1)
 			{
-				cout << Map[i][j] << "\t Armor  - " << A;
+				cout << Map[i][j] << "\t Armor  - " << P.Armor;
 			}
 			else if (i == 2 && j == x - 1)
 			{
-				cout << Map[i][j] << "\t Gold   - " << G;
+				cout << Map[i][j] << "\t Gold   - " << P.Gold;
+			}
+			else if (i == 5 && j == x - 1)
+			{
+				if (P.EnemyName == " ") { cout << Map[i][j] << "\t Enemy Name - "; }
+				else { cout << Map[i][j] << "\t Enemy Name - " << P.EnemyName; }
+			}
+			else if (i == 6 && j == x - 1)
+			{
+				if (P.EnemyHealth == 0) { cout << Map[i][j] << "\t Enemy Health - "; }
+				else { cout << Map[i][j] << "\t Enemy Health - " << P.EnemyHealth; }
 			}
 			else
 			{

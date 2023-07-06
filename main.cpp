@@ -15,26 +15,24 @@ void main()
 
 		Player P(Map);
 
-		Enemy E(Map);
-		Enemy R(Map);
+		vector<Enemy*> ListPtrOnEnemy;
 
-		while (P.PlayerMove(state, Map) && P.Health != 0)
+		Enemy E("Skillet", Map, P);
+		ListPtrOnEnemy.push_back(&E);
+
+		Enemy R("Fly Skull", Map, P);
+		ListPtrOnEnemy.push_back(&R);
+
+		while (P.Player_Move(state, Map, ListPtrOnEnemy) && P.Get_Player_Health())
 		{
 			do {
-				output(Map, P.Health, P.Arnmor, P.Gold);
-				E.EnemyAI_Move(Map, P);
-				R.EnemyAI_Move(Map, P);
+				output(Map, P);
+				if (E.Get_Enemy_Health() > 0) E.EnemyAI_Move(Map, P);
+				if (R.Get_Enemy_Health() > 0) R.EnemyAI_Move(Map, P);
 				Sleep(400);
 				system("cls");
 			} while (!_kbhit());
 		}
 	}
-	
-	/*char a = 0;
-
-	for (int i = 0; i < 256; i++)
-	{
-		cout << a << " - symbol #" << i << endl;
-		a++;
-	}*/
+		
 }

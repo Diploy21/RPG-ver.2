@@ -1,47 +1,67 @@
 #include "Player.h"
-#include "Source.h"
 #include "Enemy.h"
+#include "Source.h"
 
+class Enemy;
 
 //движение игрока, возвращает ложь если нажата ќ( используетс€ дл€ завершени€ игры
-bool Player::PlayerMove(bool state, char Map[y][x])
+bool Player::Player_Move(bool state, char Map[y][x], vector<Enemy*> ListPtr)
 {
+	int counter = 0;
 	switch (_getch())
 	{
 	case 'w':
-		if (Map[Player_Position_Y - 1][Player_Position_X] == ' ')
+		if (Map[PlayerPositionY - 1][PlayerPositionX] == ' ')
 		{
-			Map[Player_Position_Y][Player_Position_X] = ' ';
-			Player_Position_Y--;
-			Map[Player_Position_Y][Player_Position_X] = Sign;
+			this->Sign = 30;
+			Map[PlayerPositionY][PlayerPositionX] = ' ';
+			PlayerPositionY--;
+			Map[PlayerPositionY][PlayerPositionX] = Sign;
 		}
 		break;
 	case 's':
-		if (Map[Player_Position_Y + 1][Player_Position_X] == ' ')
+		if (Map[PlayerPositionY + 1][PlayerPositionX] == ' ')
 		{
-			Map[Player_Position_Y][Player_Position_X] = ' ';
-			Player_Position_Y++;
-			Map[Player_Position_Y][Player_Position_X] = Sign;
+			this->Sign = 31;
+			Map[PlayerPositionY][PlayerPositionX] = ' ';
+			PlayerPositionY++;
+			Map[PlayerPositionY][PlayerPositionX] = Sign;
 		}
 		break;
 	case 'd':
-		if (Map[Player_Position_Y][Player_Position_X + 1] == ' ')
+		if (Map[PlayerPositionY][PlayerPositionX + 1] == ' ')
 		{
-			Map[Player_Position_Y][Player_Position_X] = ' ';
-			Player_Position_X++;
-			Map[Player_Position_Y][Player_Position_X] = Sign;
+			this->Sign = 16;
+			Map[PlayerPositionY][PlayerPositionX] = ' ';
+			PlayerPositionX++;
+			Map[PlayerPositionY][PlayerPositionX] = Sign;
 		}
 		break;
 	case 'a':
-		if (Map[Player_Position_Y][Player_Position_X - 1] == ' ')
+		if (Map[PlayerPositionY][PlayerPositionX - 1] == ' ')
 		{
-			Map[Player_Position_Y][Player_Position_X] = ' ';
-			Player_Position_X--;
-			Map[Player_Position_Y][Player_Position_X] = Sign;
+			this->Sign = 17;
+			Map[PlayerPositionY][PlayerPositionX] = ' ';
+			PlayerPositionX--;
+			Map[PlayerPositionY][PlayerPositionX] = Sign;
 		}
 		break;
+	case 'q':
+			if (this->Temp != nullptr) this->Temp->Sign = 1;
+			Select_Enemy(counter, ListPtr);
+			if (counter == ListPtr.size()) { counter = 0;}
+		break;
 	case 'e':
-		EnemyDamage();
+		if (this->Temp != nullptr)
+		{
+			Set_Damage_on_Enemy(Map);
+			if (this->Temp->Health <= 0)
+			{
+				this->Temp->~Enemy();
+
+				this->Temp = nullptr;
+			}
+		}
 		break;
 	case 'o':
 		cout << "Quit the game?(y/n)\n";
@@ -62,39 +82,106 @@ bool Player::PlayerMove(bool state, char Map[y][x])
 	return state;
 }
 
-void Player::EnemyDamage(char Map[y][x])
+void Player::Set_Damage_on_Enemy(char Map[y][x])
 {
-	switch(Archetype)
+	switch (Archetype)
 	{
-	case 1:
-		for (int i = Player_Position_Y  - 3; i < Player_Position_Y + 3; i++)
+	case 1: //Mage
+		for (int i = PlayerPositionY - 3; i < PlayerPositionY + 3; i++)
 		{
-			for (int j = Player_Position_X - 3; j < Player_Position_X + 3; j++)
+			for (int j = PlayerPositionX - 3; j < PlayerPositionX + 3; j++)
 			{
-				if(Map[i][j])
+				if (this->Temp->EnemyPositionY == i && this->Temp->EnemyPositionX == j)
+				{
+					if (i == PlayerPositionY - 3 || i == PlayerPositionY + 3
+						|| j == PlayerPositionX - 3 || j == PlayerPositionX + 3)
+					{
+						this->Temp->Health = this->Temp->Health - ((this->Damage / this->Temp->Armor) * 2);
+						this->EnemyHealth = this->Temp->Health;
+						break;
+					}
+					else if (i == PlayerPositionY - 2 || i == PlayerPositionY + 2
+						|| j == PlayerPositionX - 2 || j == PlayerPositionX + 2)
+					{
+						this->Temp->Health = this->Temp->Health - (this->Damage / this->Temp->Armor);
+						this->EnemyHealth = this->Temp->Health;
+						break;
+					}
+					else
+					{
+						srand(time(NULL));
+						int a = rand() % 100 + 1;
+						if (a >= 99) {this->Temp->Health = 0;}
+						else { this->Temp->Health -= 1; }
+						this->EnemyHealth = this->Temp->Health;
+						break;
+					}
+				}
 			}
 		}
 		break;
-	case 2:
-		for (int i = Player_Position_Y - 1; i < Player_Position_Y + 1; i++)
+	case 2: //Warrior
+		for (int i = PlayerPositionY - 1; i < PlayerPositionY + 1; i++)
 		{
-			for (int j = Player_Position_X - 1; j < Player_Position_X + 1; j++)
+			for (int j = PlayerPositionX - 1; j < PlayerPositionX + 1; j++)
 			{
-				if ()
+				this->Temp->Health = this->Temp->Health - ((this->Damage / this->Temp->Armor) * 2);
+				this->EnemyHealth = this->Temp->Health;
+				break;
 			}
 		}
 		break;
-	case 3:
-		for (int i = Player_Position_Y - 3; i < Player_Position_Y + 3; i++)
+	case 3: //Archer
+		for (int i = PlayerPositionY - 3; i < PlayerPositionY + 3; i++)
 		{
-			for (int j = Player_Position_X - 3; j < Player_Position_X + 3; j++)
+			for (int j = PlayerPositionX - 3; j < PlayerPositionX + 3; j++)
 			{
-				if ()
+				if (i == PlayerPositionY - 3 || i == PlayerPositionY + 3
+					|| j == PlayerPositionX - 3 || j == PlayerPositionX + 3)
+				{
+					this->EnemyHealth = this->Temp->Health - (this->Damage / this->Temp->Armor); 
+					break;
+				}
+				else if (i == PlayerPositionY - 2 || i == PlayerPositionY + 2
+					|| j == PlayerPositionX - 2 || j == PlayerPositionX + 2)
+				{
+					this->Temp->Health -= this->Temp->Health;
+					this->EnemyHealth = this->Temp->Health;
+					break;
+				}
+				else
+				{
+					this->Temp->Health = this->Temp->Health - ((this->Damage / this->Temp->Armor) * 2);
+					this->EnemyHealth = this->Temp->Health;
+					break;
+				}
 			}
 		}
 		break;
 	default:
 		break;
+	}
+}
+
+void Player::Select_Enemy(int& counter, vector<Enemy*> ListEnemy)
+{
+	while (counter < ListEnemy.size())
+	{
+		for (int i = PlayerPositionY - 3; i < PlayerPositionY + 3; i++)
+		{
+			for (int j = PlayerPositionX - 3; j < PlayerPositionX + 3; j++)
+			{
+				if (j == ListEnemy[counter]->EnemyPositionX && i == ListEnemy[counter]->EnemyPositionY && this->Temp != ListEnemy[counter])
+				{
+					ListEnemy[counter]->Sign = 2;
+					this->Temp = ListEnemy[counter];
+					this->EnemyHealth = ListEnemy[counter]->Health;
+					this->EnemyName = ListEnemy[counter]->Name;
+					return;
+				}
+			}
+		}
+		counter++;
 	}
 }
 
@@ -103,18 +190,18 @@ Player::Player(char Map[y][x])
 	srand(time(NULL));
 	bool flag = false;
 
-	Player_Position_X = rand() % 49 + 1;
-	Player_Position_Y = rand() % 24 + 1;
+	PlayerPositionX = rand() % 49 + 1;
+	PlayerPositionY = rand() % 24 + 1;
 	while (!flag)
 	{
-		if (Map[Player_Position_Y][Player_Position_X] == ' ')
+		if (Map[PlayerPositionY][PlayerPositionX] == ' ')
 		{
-			Map[Player_Position_Y][Player_Position_X] = Sign;
+			Map[PlayerPositionY][PlayerPositionX] = Sign;
 			flag = true;
 			break;
 		}
-		Player_Position_X = rand() % 49 + 1;
-		Player_Position_Y = rand() % 24 + 1;
+		PlayerPositionX = rand() % 49 + 1;
+		PlayerPositionY = rand() % 24 + 1;
 	}
 	cout << "Select character: \n";
 	cout << "1 - Mage\n";
@@ -123,25 +210,29 @@ Player::Player(char Map[y][x])
 	cin >> Archetype;
 	switch (Archetype)
 	{
-	case 1:
+	case 1: //Mage
 		Health = 100;
-		Arnmor = 1;
+		Armor = 1;
 		Gold = 25;
+		Damage = 3;
 		break;
-	case 2:
+	case 2: //Warrior
 		Health = 100;
-		Arnmor = 5;
+		Armor = 5;
 		Gold = 10;
+		Damage = 5;
 		break;
-	case 3:
+	case 3: //Archer
 		Health = 130;
-		Arnmor = 1;
+		Armor = 1;
 		Gold = 10;
+		Damage = 4;
 		break;
 	default:
 		break;
 	}
 }
+
 
 Player::Player()
 {

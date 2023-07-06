@@ -1,34 +1,35 @@
 #pragma once
 #include "Source.h"
-#include "Player.h"
+
+class Player;
 
 class Enemy
 {
+	friend class Player;
+	friend void output(char Map[y][x], Player& P);
+
 public:
-	Enemy(char Map[y][x]);
+	static int ID;
+
+	Enemy(string SetName, char Map[y][x], Player &P);
 	~Enemy();
 
 	void EnemyAI_Move(char Map[y][x], Player& P);
-	int Health, Arnmor, Damage;
+	void Coping_Map(int copy_Map_Int[y][x], char Map[y][x], Player& P);
+	void Update_Coping_Map(int copy_Map_Int[y][x], char Map[y][x], Player& P);
+	void Enemy_Move(int& EnemyPositionY, int& EnemyPositionX, int copy_Map_Int[y][x], char Map[y][x], Player& P);
+	void Building_Shortest_Path(int EnemyPositionY, int EnemyPositionX, int& counter, int copy_Map_Int[y][x]);
+	bool Path_Finder_Check(int Map[y][x], int EnemyEndMoveY, int EnemyEndMoveX, int d);
+	bool Check_Player_Position(int& EnemyEndMoveY, int& EnemyEndMoveX, char Map[y][x], Player& P);
+	inline int Get_Enemy_Health() { return this->Health; }
+	inline string Get_Enemy_Name() { return this->Name; }
 
 private:
-	void CopingMap(int copyMapInt[y][x], char Map[y][x]);
-	void UpdateCopingMap(int copyMapInt[y][x], char Map[y][x], const Player& P);
-	void EnemyDamage();
-
-	void EnemyMove(int& Enemy_Position_Y, int& Enemy_Position_X, int copyMapInt[y][x], char Map[y][x]);
-
-	void BuildingShortestPath(int Enemy_Position_Y, int Enemy_Position_X, int& counter, int copyMapInt[y][x]);
-
-	bool PathFinderCheck(int Map[y][x], int Enemy_End_Move_Y, int Enemy_End_Move_X, int d);
-
-	bool CheckPlayerPosition(int& Enemy_End_Move_Y, int& Enemy_End_Move_X, char Map[y][x]);
-
-	const char Sign = 1;
-	int Enemy_Position_X;
-	int Enemy_Position_Y;
-	int Enemy_End_Move_X, Enemy_End_Move_Y;
+	int Health, Armor, Damage;
+	char Sign = 1;
+	string Name;
+	int EnemyPositionX, EnemyPositionY, EnemyEndMoveX, EnemyEndMoveY;
 	int counter;
-	int copyMapInt[y][x];
+	int copy_Map_Int[y][x];
 
 };
