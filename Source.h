@@ -12,6 +12,7 @@
 
 class Player;
 class Enemy;
+class Weapon;
 
 using namespace std;
 

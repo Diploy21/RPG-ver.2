@@ -1,8 +1,6 @@
 #pragma once
 #include "Source.h"
 
-class Player;
-
 class Enemy
 {
 	friend class Player;

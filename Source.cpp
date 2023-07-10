@@ -1,9 +1,9 @@
 ﻿#include "Source.h"
 #include "Enemy.h"
+#include "Weapon.h"
 #include "Player.h"
 using namespace std;
 
-class Player;
 
 //Menu
 bool Menu(bool state)
@@ -85,12 +85,16 @@ void output(char Map[y][x], Player &P)
 			{
 				cout << Map[i][j] << "\t Gold   - " << P.Gold;
 			}
-			else if (i == 5 && j == x - 1)
+			else if (i == 3 && j == x - 1)
+			{
+				cout << Map[i][j] << "\t Damage   - " << P.Damage;
+			}
+			else if (i == 6 && j == x - 1)
 			{
 				if (P.EnemyName == " ") { cout << Map[i][j] << "\t Enemy Name - "; }
 				else { cout << Map[i][j] << "\t Enemy Name - " << P.EnemyName; }
 			}
-			else if (i == 6 && j == x - 1)
+			else if (i == 7 && j == x - 1)
 			{
 				if (P.EnemyHealth == 0) { cout << Map[i][j] << "\t Enemy Health - "; }
 				else { cout << Map[i][j] << "\t Enemy Health - " << P.EnemyHealth; }

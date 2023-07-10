@@ -1,8 +1,8 @@
 #include "Player.h"
 #include "Enemy.h"
+#include "Weapon.h"
 #include "Source.h"
 
-class Enemy;
 
 //движение игрока, возвращает ложь если нажата ќ( используетс€ дл€ завершени€ игры
 bool Player::Player_Move(bool state, char Map[y][x], vector<Enemy*> ListPtr)
@@ -86,22 +86,22 @@ void Player::Set_Damage_on_Enemy(char Map[y][x])
 {
 	switch (Archetype)
 	{
-	case 1: //Mage
-		for (int i = PlayerPositionY - 3; i < PlayerPositionY + 3; i++)
+	case 3: //Mage
+		for (int i = PlayerPositionY - Archetype; i < PlayerPositionY + Archetype; i++)
 		{
-			for (int j = PlayerPositionX - 3; j < PlayerPositionX + 3; j++)
+			for (int j = PlayerPositionX - Archetype; j < PlayerPositionX + Archetype; j++)
 			{
 				if (this->Temp->EnemyPositionY == i && this->Temp->EnemyPositionX == j)
 				{
-					if (i == PlayerPositionY - 3 || i == PlayerPositionY + 3
-						|| j == PlayerPositionX - 3 || j == PlayerPositionX + 3)
+					if (i == PlayerPositionY - Archetype || i == PlayerPositionY + Archetype
+						|| j == PlayerPositionX - Archetype || j == PlayerPositionX + Archetype)
 					{
 						this->Temp->Health = this->Temp->Health - ((this->Damage / this->Temp->Armor) * 2);
 						this->EnemyHealth = this->Temp->Health;
 						break;
 					}
-					else if (i == PlayerPositionY - 2 || i == PlayerPositionY + 2
-						|| j == PlayerPositionX - 2 || j == PlayerPositionX + 2)
+					else if (i == PlayerPositionY - (Archetype - 1) || i == PlayerPositionY + (Archetype - 1)
+						|| j == PlayerPositionX - (Archetype - 1) || j == PlayerPositionX + (Archetype - 1))
 					{
 						this->Temp->Health = this->Temp->Health - (this->Damage / this->Temp->Armor);
 						this->EnemyHealth = this->Temp->Health;
@@ -121,9 +121,9 @@ void Player::Set_Damage_on_Enemy(char Map[y][x])
 		}
 		break;
 	case 2: //Warrior
-		for (int i = PlayerPositionY - 1; i < PlayerPositionY + 1; i++)
+		for (int i = PlayerPositionY - Archetype; i < PlayerPositionY + Archetype; i++)
 		{
-			for (int j = PlayerPositionX - 1; j < PlayerPositionX + 1; j++)
+			for (int j = PlayerPositionX - Archetype; j < PlayerPositionX + Archetype; j++)
 			{
 				this->Temp->Health = this->Temp->Health - ((this->Damage / this->Temp->Armor) * 2);
 				this->EnemyHealth = this->Temp->Health;
@@ -131,19 +131,19 @@ void Player::Set_Damage_on_Enemy(char Map[y][x])
 			}
 		}
 		break;
-	case 3: //Archer
-		for (int i = PlayerPositionY - 3; i < PlayerPositionY + 3; i++)
+	case 6: //Archer
+		for (int i = PlayerPositionY - Archetype; i < PlayerPositionY + 3; i++)
 		{
-			for (int j = PlayerPositionX - 3; j < PlayerPositionX + 3; j++)
+			for (int j = PlayerPositionX - Archetype; j < PlayerPositionX + Archetype; j++)
 			{
-				if (i == PlayerPositionY - 3 || i == PlayerPositionY + 3
-					|| j == PlayerPositionX - 3 || j == PlayerPositionX + 3)
+				if (i == PlayerPositionY - Archetype || i == PlayerPositionY + Archetype
+					|| j == PlayerPositionX - Archetype || j == PlayerPositionX + Archetype)
 				{
 					this->EnemyHealth = this->Temp->Health - (this->Damage / this->Temp->Armor); 
 					break;
 				}
-				else if (i == PlayerPositionY - 2 || i == PlayerPositionY + 2
-					|| j == PlayerPositionX - 2 || j == PlayerPositionX + 2)
+				else if (i == PlayerPositionY - (Archetype / 2) || i == PlayerPositionY + (Archetype / 2)
+					|| j == PlayerPositionX - (Archetype / 2) || j == PlayerPositionX + (Archetype / 2))
 				{
 					this->Temp->Health -= this->Temp->Health;
 					this->EnemyHealth = this->Temp->Health;
@@ -167,9 +167,9 @@ void Player::Select_Enemy(int& counter, vector<Enemy*> ListEnemy)
 {
 	while (counter < ListEnemy.size())
 	{
-		for (int i = PlayerPositionY - 3; i < PlayerPositionY + 3; i++)
+		for (int i = PlayerPositionY - Archetype; i < PlayerPositionY + Archetype; i++)
 		{
-			for (int j = PlayerPositionX - 3; j < PlayerPositionX + 3; j++)
+			for (int j = PlayerPositionX - Archetype; j < PlayerPositionX + Archetype; j++)
 			{
 				if (j == ListEnemy[counter]->EnemyPositionX && i == ListEnemy[counter]->EnemyPositionY && this->Temp != ListEnemy[counter])
 				{
@@ -205,8 +205,11 @@ Player::Player(char Map[y][x])
 	}
 	cout << "Select character: \n";
 	cout << "1 - Mage\n";
+	Staff MageStaff(3, 1, "A Simple Stuff");
 	cout << "2 - Warrior\n";
+	DoubleEdgedSword Sword(5, 2, "Double Sword");
 	cout << "3 - Archer\n";
+	Bow Bow(4, 1, "Hunt Bow");
 	cin >> Archetype;
 	switch (Archetype)
 	{
@@ -214,19 +217,21 @@ Player::Player(char Map[y][x])
 		Health = 100;
 		Armor = 1;
 		Gold = 25;
-		Damage = 3;
+		Damage = MageStaff.Get_Damage() + 1;
+		Archetype = 3;
 		break;
 	case 2: //Warrior
 		Health = 100;
 		Armor = 5;
 		Gold = 10;
-		Damage = 5;
+		Damage = Sword.Get_Damage() + 1;
 		break;
 	case 3: //Archer
 		Health = 130;
 		Armor = 1;
 		Gold = 10;
-		Damage = 4;
+		Damage = Bow.Get_Damage() + 1;
+		Archetype = 6;
 		break;
 	default:
 		break;

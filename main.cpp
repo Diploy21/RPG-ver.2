@@ -17,18 +17,18 @@ void main()
 
 		vector<Enemy*> ListPtrOnEnemy;
 
-		Enemy E("Skillet", Map, P);
-		ListPtrOnEnemy.push_back(&E);
+		Enemy Sk("Skillet", Map, P);
+		ListPtrOnEnemy.push_back(&Sk);
 
-		Enemy R("Fly Skull", Map, P);
-		ListPtrOnEnemy.push_back(&R);
+		Enemy FlSku("Fly Skull", Map, P);
+		ListPtrOnEnemy.push_back(&FlSku);
 
 		while (P.Player_Move(state, Map, ListPtrOnEnemy) && P.Get_Player_Health())
 		{
 			do {
 				output(Map, P);
-				if (E.Get_Enemy_Health() > 0) E.EnemyAI_Move(Map, P);
-				if (R.Get_Enemy_Health() > 0) R.EnemyAI_Move(Map, P);
+				if (Sk.Get_Enemy_Health() > 0) Sk.EnemyAI_Move(Map, P);
+				if (FlSku.Get_Enemy_Health() > 0) FlSku.EnemyAI_Move(Map, P);
 				Sleep(400);
 				system("cls");
 			} while (!_kbhit());

@@ -1,11 +1,11 @@
 #pragma once
 #include "Source.h"
-class Enemy;
 
 class Player
 {
 	friend void output(char Map[y][x], Player &P);
 	friend class Enemy;
+	friend class Weapon;
 
 public:
 
@@ -25,6 +25,22 @@ private:
 	Enemy* Temp = nullptr;
 	string EnemyName;
 	int EnemyHealth;
+
+	template <typename Item>
+	class Inventory
+	{
+	public:
+		template <typename T> T Get_Item_Stat();
+		void Place_Item(Item Item);
+		Item Pick_Item();
+		Inventory();
+		Inventory& operator= (Inventory& Prev);
+
+	protected:
+		Item* SlotInventory;
+
+	};
+
 };
 
 
