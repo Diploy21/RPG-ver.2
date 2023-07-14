@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "Enemy.h"
-#include "Weapon.h"
 #include "Source.h"
+#include "Items.h"
 
 
 //движение игрока, возвращает ложь если нажата ќ( используетс€ дл€ завершени€ игры
@@ -47,19 +47,19 @@ bool Player::Player_Move(bool state, char Map[y][x], vector<Enemy*> ListPtr)
 		}
 		break;
 	case 'q':
-			if (this->Temp != nullptr) this->Temp->Sign = 1;
+			if (this->pTempEnemy != nullptr) this->pTempEnemy->Sign = 1;
 			Select_Enemy(counter, ListPtr);
 			if (counter == ListPtr.size()) { counter = 0;}
 		break;
 	case 'e':
-		if (this->Temp != nullptr)
+		if (this->pTempEnemy != nullptr)
 		{
 			Set_Damage_on_Enemy(Map);
-			if (this->Temp->Health <= 0)
+			if (this->pTempEnemy->Health <= 0)
 			{
-				this->Temp->~Enemy();
+				this->pTempEnemy->~Enemy();
 
-				this->Temp = nullptr;
+				this->pTempEnemy = nullptr;
 			}
 		}
 		break;
@@ -91,29 +91,29 @@ void Player::Set_Damage_on_Enemy(char Map[y][x])
 		{
 			for (int j = PlayerPositionX - Archetype; j < PlayerPositionX + Archetype; j++)
 			{
-				if (this->Temp->EnemyPositionY == i && this->Temp->EnemyPositionX == j)
+				if (this->pTempEnemy->EnemyPositionY == i && this->pTempEnemy->EnemyPositionX == j)
 				{
 					if (i == PlayerPositionY - Archetype || i == PlayerPositionY + Archetype
 						|| j == PlayerPositionX - Archetype || j == PlayerPositionX + Archetype)
 					{
-						this->Temp->Health = this->Temp->Health - ((this->Damage / this->Temp->Armor) * 2);
-						this->EnemyHealth = this->Temp->Health;
+						this->pTempEnemy->Health = this->pTempEnemy->Health - ((this->Damage / this->pTempEnemy->Armor) * 2);
+						this->EnemyHealth = this->pTempEnemy->Health;
 						break;
 					}
 					else if (i == PlayerPositionY - (Archetype - 1) || i == PlayerPositionY + (Archetype - 1)
 						|| j == PlayerPositionX - (Archetype - 1) || j == PlayerPositionX + (Archetype - 1))
 					{
-						this->Temp->Health = this->Temp->Health - (this->Damage / this->Temp->Armor);
-						this->EnemyHealth = this->Temp->Health;
+						this->pTempEnemy->Health = this->pTempEnemy->Health - (this->Damage / this->pTempEnemy->Armor);
+						this->EnemyHealth = this->pTempEnemy->Health;
 						break;
 					}
 					else
 					{
 						srand(time(NULL));
 						int a = rand() % 100 + 1;
-						if (a >= 99) {this->Temp->Health = 0;}
-						else { this->Temp->Health -= 1; }
-						this->EnemyHealth = this->Temp->Health;
+						if (a >= 99) {this->pTempEnemy->Health = 0;}
+						else { this->pTempEnemy->Health -= 1; }
+						this->EnemyHealth = this->pTempEnemy->Health;
 						break;
 					}
 				}
@@ -125,8 +125,8 @@ void Player::Set_Damage_on_Enemy(char Map[y][x])
 		{
 			for (int j = PlayerPositionX - Archetype; j < PlayerPositionX + Archetype; j++)
 			{
-				this->Temp->Health = this->Temp->Health - ((this->Damage / this->Temp->Armor) * 2);
-				this->EnemyHealth = this->Temp->Health;
+				this->pTempEnemy->Health = this->pTempEnemy->Health - ((this->Damage / this->pTempEnemy->Armor) * 2);
+				this->EnemyHealth = this->pTempEnemy->Health;
 				break;
 			}
 		}
@@ -139,20 +139,20 @@ void Player::Set_Damage_on_Enemy(char Map[y][x])
 				if (i == PlayerPositionY - Archetype || i == PlayerPositionY + Archetype
 					|| j == PlayerPositionX - Archetype || j == PlayerPositionX + Archetype)
 				{
-					this->EnemyHealth = this->Temp->Health - (this->Damage / this->Temp->Armor); 
+					this->EnemyHealth = this->pTempEnemy->Health - (this->Damage / this->pTempEnemy->Armor);
 					break;
 				}
 				else if (i == PlayerPositionY - (Archetype / 2) || i == PlayerPositionY + (Archetype / 2)
 					|| j == PlayerPositionX - (Archetype / 2) || j == PlayerPositionX + (Archetype / 2))
 				{
-					this->Temp->Health -= this->Temp->Health;
-					this->EnemyHealth = this->Temp->Health;
+					this->pTempEnemy->Health -= this->pTempEnemy->Health;
+					this->EnemyHealth = this->pTempEnemy->Health;
 					break;
 				}
 				else
 				{
-					this->Temp->Health = this->Temp->Health - ((this->Damage / this->Temp->Armor) * 2);
-					this->EnemyHealth = this->Temp->Health;
+					this->pTempEnemy->Health = this->pTempEnemy->Health - ((this->Damage / this->pTempEnemy->Armor) * 2);
+					this->EnemyHealth = this->pTempEnemy->Health;
 					break;
 				}
 			}
@@ -171,10 +171,10 @@ void Player::Select_Enemy(int& counter, vector<Enemy*> ListEnemy)
 		{
 			for (int j = PlayerPositionX - Archetype; j < PlayerPositionX + Archetype; j++)
 			{
-				if (j == ListEnemy[counter]->EnemyPositionX && i == ListEnemy[counter]->EnemyPositionY && this->Temp != ListEnemy[counter])
+				if (j == ListEnemy[counter]->EnemyPositionX && i == ListEnemy[counter]->EnemyPositionY && this->pTempEnemy != ListEnemy[counter])
 				{
 					ListEnemy[counter]->Sign = 2;
-					this->Temp = ListEnemy[counter];
+					this->pTempEnemy = ListEnemy[counter];
 					this->EnemyHealth = ListEnemy[counter]->Health;
 					this->EnemyName = ListEnemy[counter]->Name;
 					return;
@@ -205,32 +205,31 @@ Player::Player(char Map[y][x])
 	}
 	cout << "Select character: \n";
 	cout << "1 - Mage\n";
-	Staff MageStaff(3, 1, "A Simple Stuff");
 	cout << "2 - Warrior\n";
-	DoubleEdgedSword Sword(5, 2, "Double Sword");
 	cout << "3 - Archer\n";
-	Bow Bow(4, 1, "Hunt Bow");
+
+	Inventory Invent(5);
+	Items::Item Stuff("Magic Stuff", 1, 4);
+	Invent.Set_Item_In_Inventory(Stuff);
+
 	cin >> Archetype;
 	switch (Archetype)
 	{
 	case 1: //Mage
 		Health = 100;
 		Armor = 1;
-		Gold = 25;
-		Damage = MageStaff.Get_Damage() + 1;
+		Damage = 1;
 		Archetype = 3;
 		break;
 	case 2: //Warrior
 		Health = 100;
 		Armor = 5;
-		Gold = 10;
-		Damage = Sword.Get_Damage() + 1;
+		Damage = 1;
 		break;
 	case 3: //Archer
 		Health = 130;
 		Armor = 1;
-		Gold = 10;
-		Damage = Bow.Get_Damage() + 1;
+		Damage = 1;
 		Archetype = 6;
 		break;
 	default:
@@ -238,6 +237,24 @@ Player::Player(char Map[y][x])
 	}
 }
 
+
+Player::Inventory::Inventory(int Size)
+{
+	Slot = new SlotInventory[Size];
+	Wallet = 25;
+}
+
+void Player::Inventory::Set_Item_In_Inventory(Items::Item &item)
+{
+	this->Slot[0].Title = item.Title;
+	this->Slot[0].ID = item.ID;
+	this->Slot[0].Characteristic = item.Characteristic;
+}
+
+Player::Inventory::~Inventory()
+{
+	delete[] Slot;
+}
 
 Player::Player()
 {
@@ -247,4 +264,8 @@ Player::Player()
 Player::~Player()
 {
 
+}
+
+Player::Inventory::SlotInventory::SlotInventory()
+{
 }

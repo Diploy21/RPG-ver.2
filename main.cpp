@@ -15,7 +15,8 @@ void main()
 
 		Player P(Map);
 
-		vector<Enemy*> ListPtrOnEnemy;
+		
+		/*vector<Enemy*> ListPtrOnEnemy;
 
 		Enemy Sk("Skillet", Map, P);
 		ListPtrOnEnemy.push_back(&Sk);
@@ -32,7 +33,7 @@ void main()
 				Sleep(400);
 				system("cls");
 			} while (!_kbhit());
-		}
+		}*/
 	}
 		
 }

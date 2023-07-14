@@ -1,9 +1,6 @@
 ﻿#include "Source.h"
 #include "Enemy.h"
-#include "Weapon.h"
 #include "Player.h"
-using namespace std;
-
 
 //Menu
 bool Menu(bool state)
@@ -83,7 +80,7 @@ void output(char Map[y][x], Player &P)
 			}
 			else if (i == 2 && j == x - 1)
 			{
-				cout << Map[i][j] << "\t Gold   - " << P.Gold;
+				cout << Map[i][j] << "\t Gold   - " << P.Get_Gold();
 			}
 			else if (i == 3 && j == x - 1)
 			{

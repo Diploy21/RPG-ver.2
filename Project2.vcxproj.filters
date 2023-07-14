@@ -27,6 +27,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="Items.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Enemy.h">
@@ -36,6 +39,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Source.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Items.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
