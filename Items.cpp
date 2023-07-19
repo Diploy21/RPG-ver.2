@@ -1,11 +1,12 @@
 #include "Items.h"
 
-Items::Item::Item(string Ttl, int id, int Charact)
-	: Title(Ttl), ID(id), Characteristic(Charact)
+
+Item::Item(string Ttl, enum CharacterID id, int Charact)
+	: Title(Ttl), ItemID(static_cast<char>(id)), Characteristic(Charact)
 {
 
 }
 
-Items::Item::~Item()
+Item::~Item()
 {
 }

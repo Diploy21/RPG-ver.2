@@ -1,10 +1,11 @@
+#include "Source.h"
 #include "Player.h"
 #include "Enemy.h"
-#include "Source.h"
 #include "Items.h"
 
+int Player::Inventory::Wallet = 0;
 
-//движение игрока, возвращает ложь если нажата ќ( используетс€ дл€ завершени€ игры
+//движение игрока, возвращает ложь если нажата ќ, используетс€ дл€ завершени€ игры
 bool Player::Player_Move(bool state, char Map[y][x], vector<Enemy*> ListPtr)
 {
 	int counter = 0;
@@ -209,8 +210,8 @@ Player::Player(char Map[y][x])
 	cout << "3 - Archer\n";
 
 	Inventory Invent(5);
-	Items::Item Stuff("Magic Stuff", 1, 4);
-	Invent.Set_Item_In_Inventory(Stuff);
+	Item Stuff("Magic Stuff", CharacterID::Weapon, 4);
+	Invent.Add_Item_In_Inventory(Stuff);
 
 	cin >> Archetype;
 	switch (Archetype)
@@ -244,10 +245,10 @@ Player::Inventory::Inventory(int Size)
 	Wallet = 25;
 }
 
-void Player::Inventory::Set_Item_In_Inventory(Items::Item &item)
+void Player::Inventory::Add_Item_In_Inventory(Item &item)
 {
-	this->Slot[0].Title = item.Title;
-	this->Slot[0].ID = item.ID;
+	this->Slot[0].TitleItem = item.Title;
+	this->Slot[0].ID = item.ItemID;
 	this->Slot[0].Characteristic = item.Characteristic;
 }
 
@@ -266,6 +267,6 @@ Player::~Player()
 
 }
 
-Player::Inventory::SlotInventory::SlotInventory()
+SlotInventory::SlotInventory()
 {
 }

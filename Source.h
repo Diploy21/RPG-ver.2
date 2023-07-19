@@ -14,15 +14,9 @@
 #define x 50
 #define y 25
 
-
 using namespace std;
-using Items::Item;
-
 
 class Player;
-class Enemy;
-class Item;
-
 
 void RenderMap(char Map[y][x]);
 void output(char Map[y][x], Player& P);

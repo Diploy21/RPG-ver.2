@@ -1,36 +1,23 @@
 #pragma once
 #include "Source.h"
+#include"Player.h"
 
-namespace Items
+using namespace std;
+
+enum class CharacterID{Weapon = 'W', Armor = 'A', HealthPot= 'H'};
+
+class Item
 {
-	class Item
-	{
-	public:
-		inline Item Get_Item_Type() { return *this; }
-		Item(string Ttl, int id, int Charact);
-		~Item();
+	friend class Player::Inventory;
+	using enum CharacterID;
+public:
+	inline Item Get_Item_Type() { return *this; }
+	Item(string Ttl, enum CharacterID id, int Charact);
+	Item();
+	~Item();
 
-	private:
-		string Title;
-		int ID;
-		int Characteristic;
-	};
-
-
-	/*class MainWeapon : public Item
-	{
-
-	};
-
-	class SecWeapon : public Item
-	{
-
-	};
-
-	class Armor : public Item
-	{
-
-	};*/
-
-
-}
+private:
+	string Title;
+	char ItemID;
+	int Characteristic;
+};
